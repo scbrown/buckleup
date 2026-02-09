@@ -1,0 +1,34 @@
+[![License: {{ license }}](https://img.shields.io/badge/License-{{ license }}-blue.svg)](LICENSE)
+
+# {{ project_name }}
+
+{{ project_description }}
+
+## Quick Start
+
+TODO: Add quick start instructions.
+
+## Development
+
+This project uses [just](https://github.com/casey/just) as a command runner.
+
+```bash
+just --list          # Show available commands
+just setup           # Install pre-commit hooks
+just check           # Run all quality checks
+```
+{% if include_mdbook %}
+## Documentation
+
+```bash
+just docs build      # Build the book
+just docs serve      # Serve locally with hot reload
+```
+{% endif %}
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
+
+## License
+
+[{{ license }}](LICENSE)

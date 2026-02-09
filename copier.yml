@@ -1,0 +1,75 @@
+_subdirectory: template
+_min_copier_version: "9.0.0"
+
+_jinja_extensions:
+  - jinja2_time.TimeExtension
+
+_tasks:
+  - "cd {{ _copier_conf.dst_path }} && ln -sf AGENTS.md CLAUDE.md"
+  - "cd {{ _copier_conf.dst_path }} && ln -sf AGENTS.md GEMINI.md"
+  - >-
+    cd {{ _copier_conf.dst_path }} &&
+    if [ ! -d .git ]; then git init; fi
+  - >-
+    {% if include_markdown_linting %}
+    cd {{ _copier_conf.dst_path }} &&
+    mkdir -p ".vale/styles/Vocab/{{ project_name }}" &&
+    touch ".vale/styles/Vocab/{{ project_name }}/accept.txt" &&
+    touch ".vale/styles/Vocab/{{ project_name }}/reject.txt"
+    {% endif %}
+  # Clean up empty directories from excluded features
+  - >-
+    cd {{ _copier_conf.dst_path }} &&
+    find . -type d -empty -not -path './.git/*' -delete 2>/dev/null || true
+
+_exclude:
+  - "{% if not include_mdbook %}docs/book/**{% endif %}"
+  - "{% if not include_markdown_linting %}.markdownlint-cli2.yaml{% endif %}"
+  - "{% if not include_markdown_linting %}.prettierrc.yaml{% endif %}"
+  - "{% if not include_markdown_linting %}.vale.ini{% endif %}"
+  - "{% if not include_markdown_linting %}.vale/**{% endif %}"
+  - "{% if not include_github %}.github/**{% endif %}"
+  - "{% if not include_mdbook %}.github/workflows/docs.yml{% endif %}"
+
+# --- Questions ---
+
+project_name:
+  type: str
+  help: "Project name (used in README, docs, directory naming)"
+
+project_description:
+  type: str
+  help: "Short project description (one sentence)"
+
+author_name:
+  type: str
+  default: "Steve Brown"
+  help: "Author name (used in LICENSE)"
+
+github_username:
+  type: str
+  default: "scbrown"
+  help: "GitHub username (used in repo URLs and badges)"
+
+include_mdbook:
+  type: bool
+  default: true
+  help: "Include mdbook documentation under docs/book/"
+
+include_markdown_linting:
+  type: bool
+  default: true
+  help: "Include markdown linting (markdownlint, prettier, vale)"
+
+include_github:
+  type: bool
+  default: true
+  help: "Include GitHub Actions CI workflows"
+
+license:
+  type: str
+  default: "MIT"
+  choices:
+    - "MIT"
+    - "Apache-2.0"
+  help: "License type"

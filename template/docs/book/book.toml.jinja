@@ -1,0 +1,24 @@
+[book]
+title = "{{ project_name }} Documentation"
+authors = ["{{ author_name }}"]
+description = "Documentation for {{ project_name }}"
+src = "src"
+language = "en"
+
+[build]
+build-dir = "book"
+
+[output.html]
+default-theme = "coal"
+preferred-dark-theme = "coal"
+git-repository-url = "https://github.com/{{ github_username }}/{{ project_name }}"
+edit-url-template = "https://github.com/{{ github_username }}/{{ project_name }}/edit/main/docs/book/{path}"
+additional-css = ["custom/css/custom.css"]
+site-url = "/{{ project_name }}/"
+
+[output.html.search]
+enable = true
+
+[output.linkcheck]
+warning-policy = "warn"
+optional = true
