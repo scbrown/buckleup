@@ -20,6 +20,63 @@ setup:
 # Run all quality checks (pre-push gate)
 check:
     pre-commit run --all-files
+{% if language == 'go' %}
+# === Go ===
+
+# Build the binary
+build:
+    go build {% if verbose == "false" %}-v{% endif %} ./...
+
+# Run tests
+test *args="./...":
+    go test {% if verbose == "true" %}-v{% endif %} {{ '{{' }}args{{ '}}' }}
+
+# Run linter
+lint:
+    golangci-lint run ./...
+
+# Format code
+fmt:
+    gofmt -w .
+{% endif %}
+{% if language == 'python' %}
+# === Python ===
+
+# Install in development mode
+install:
+    pip install -e ".[dev]"
+
+# Run tests
+test *args="":
+    pytest {{ '{{' }}args{{ '}}' }}
+
+# Run linter
+lint:
+    ruff check .
+
+# Format code
+fmt:
+    ruff format .
+{% endif %}
+{% if language == 'rust' %}
+# === Rust ===
+
+# Build the project
+build:
+    cargo build
+
+# Run tests
+test *args="":
+    cargo test {{ '{{' }}args{{ '}}' }}
+
+# Run linter
+lint:
+    cargo clippy -- -D warnings
+
+# Format code
+fmt:
+    cargo fmt
+{% endif %}
 {% if include_mdbook %}
 # === Documentation ===
 

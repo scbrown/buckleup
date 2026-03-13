@@ -17,6 +17,12 @@ _tasks:
     touch ".vale/styles/Vocab/{{ project_name }}/accept.txt" &&
     touch ".vale/styles/Vocab/{{ project_name }}/reject.txt"
     {% endif %}
+  # Rename Rust src directory (Copier can't use src/ for both Python and Rust)
+  - >-
+    {% if language == 'rust' %}
+    cd {{ _copier_conf.dst_path }} &&
+    mv src_rust src
+    {% endif %}
   # Clean up empty directories from excluded features
   - >-
     cd {{ _copier_conf.dst_path }} &&
@@ -30,6 +36,14 @@ _exclude:
   - "{% if not include_markdown_linting %}.vale/**{% endif %}"
   - "{% if not include_github %}.github/**{% endif %}"
   - "{% if not include_mdbook %}.github/workflows/docs.yml{% endif %}"
+  - "{% if language != 'go' %}go.mod{% endif %}"
+  - "{% if language != 'go' %}main.go{% endif %}"
+  - "{% if language != 'go' %}main_test.go{% endif %}"
+  - "{% if language != 'python' %}pyproject.toml{% endif %}"
+  - "{% if language != 'python' %}src/**{% endif %}"
+  - "{% if language != 'python' %}tests/**{% endif %}"
+  - "{% if language != 'rust' %}Cargo.toml{% endif %}"
+  - "{% if language != 'rust' %}src_rust/**{% endif %}"
 
 # --- Questions ---
 
@@ -65,6 +79,16 @@ include_github:
   type: bool
   default: true
   help: "Include GitHub Actions CI workflows"
+
+language:
+  type: str
+  default: "none"
+  choices:
+    - "none"
+    - "go"
+    - "python"
+    - "rust"
+  help: "Programming language layer (adds build tooling, CI, and project structure)"
 
 license:
   type: str

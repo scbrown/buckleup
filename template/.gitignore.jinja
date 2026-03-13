@@ -16,3 +16,19 @@ Thumbs.db
 # mdbook output
 docs/book/book/
 {% endif %}
+{% if language == 'go' %}
+# Go
+{{ project_name }}
+{% endif %}
+{% if language == 'python' %}
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+{% endif %}
+{% if language == 'rust' %}
+# Rust
+/target/
+{% endif %}
