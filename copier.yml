@@ -21,6 +21,7 @@ _tasks:
   - >-
     {% if language == 'rust' %}
     cd {{ _copier_conf.dst_path }} &&
+    rm -rf src &&
     mv src_rust src
     {% endif %}
   # Clean up empty directories from excluded features
