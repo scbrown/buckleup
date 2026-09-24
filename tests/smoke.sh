@@ -233,6 +233,68 @@ assert_file_contains "$dest/docs/book/book.toml" "janedoe"
 
 # ============================================================
 echo ""
+echo "=== Test 7: Rust project — hooks mirror CI ==="
+dest="$(generate rust_project \
+    --data language=rust)"
+
+assert_file_contains "$dest/.pre-commit-config.yaml" "cargo-fmt"
+assert_file_contains "$dest/.pre-commit-config.yaml" "cargo fmt -- --check"
+assert_file_contains "$dest/.pre-commit-config.yaml" "cargo-clippy"
+assert_file_contains "$dest/.pre-commit-config.yaml" "cargo clippy -- -D warnings"
+assert_file_exists "$dest/Cargo.toml"
+# CI should include rust build jobs
+assert_file_contains "$dest/.github/workflows/ci.yml" "cargo build"
+assert_file_contains "$dest/.github/workflows/ci.yml" "cargo test"
+
+# ============================================================
+echo ""
+echo "=== Test 8: Go project — hooks mirror CI ==="
+dest="$(generate go_project \
+    --data language=go)"
+
+assert_file_contains "$dest/.pre-commit-config.yaml" "go-vet"
+assert_file_contains "$dest/.pre-commit-config.yaml" "go vet"
+assert_file_contains "$dest/.pre-commit-config.yaml" "go-build"
+assert_file_contains "$dest/.pre-commit-config.yaml" "go build"
+assert_file_exists "$dest/go.mod"
+assert_file_exists "$dest/main.go"
+# CI should include go build jobs
+assert_file_contains "$dest/.github/workflows/ci.yml" "go build"
+assert_file_contains "$dest/.github/workflows/ci.yml" "go test"
+
+# ============================================================
+echo ""
+echo "=== Test 9: Python project — hooks mirror CI ==="
+dest="$(generate python_project \
+    --data language=python)"
+
+assert_file_contains "$dest/.pre-commit-config.yaml" "pytest"
+assert_file_exists "$dest/pyproject.toml"
+# CI should include python test jobs
+assert_file_contains "$dest/.github/workflows/ci.yml" "pytest"
+
+# ============================================================
+echo ""
+echo "=== Test 10: mdbook hook present when enabled ==="
+dest="$(generate mdbook_hooks \
+    --data include_mdbook=true)"
+
+assert_file_contains "$dest/.pre-commit-config.yaml" "mdbook-build"
+assert_file_contains "$dest/.pre-commit-config.yaml" "mdbook build docs/book"
+
+# ============================================================
+echo ""
+echo "=== Test 11: No language hooks when language=none ==="
+dest="$(generate no_lang \
+    --data include_mdbook=false)"
+
+assert_file_not_contains "$dest/.pre-commit-config.yaml" "cargo"
+assert_file_not_contains "$dest/.pre-commit-config.yaml" "go vet"
+assert_file_not_contains "$dest/.pre-commit-config.yaml" "pytest"
+assert_file_not_contains "$dest/.pre-commit-config.yaml" "mdbook"
+
+# ============================================================
+echo ""
 echo "================================"
 echo "Results: $PASS passed, $FAIL failed"
 if [ "$FAIL" -gt 0 ]; then

@@ -9,10 +9,62 @@ repos:
         types: [json]
       - id: check-merge-conflict
       - id: check-added-large-files
-{% if include_markdown_linting %}
+{%- if include_markdown_linting %}
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.17.2
     hooks:
       - id: markdownlint-cli2
         args: []
-{% endif %}
+{%- endif %}
+{%- if language == 'rust' %}
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt
+        entry: cargo fmt -- --check
+        language: system
+        types: [rust]
+        pass_filenames: false
+      - id: cargo-clippy
+        name: cargo clippy
+        entry: cargo clippy -- -D warnings
+        language: system
+        types: [rust]
+        pass_filenames: false
+{%- endif %}
+{%- if language == 'go' %}
+  - repo: local
+    hooks:
+      - id: go-vet
+        name: go vet
+        entry: go vet ./...
+        language: system
+        types: [go]
+        pass_filenames: false
+      - id: go-build
+        name: go build
+        entry: go build ./...
+        language: system
+        types: [go]
+        pass_filenames: false
+{%- endif %}
+{%- if language == 'python' %}
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+{%- endif %}
+{%- if include_mdbook %}
+  - repo: local
+    hooks:
+      - id: mdbook-build
+        name: mdbook build
+        entry: mdbook build docs/book
+        language: system
+        files: ^docs/book/
+        pass_filenames: false
+{%- endif %}
